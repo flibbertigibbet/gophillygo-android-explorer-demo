@@ -1,6 +1,7 @@
 package com.gophillygo.explorer.fragments;
 
 import android.content.Context;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.gophillygo.explorer.R;
 import com.gophillygo.explorer.models.Destination;
 
@@ -83,6 +86,9 @@ public class DestinationFragment extends Fragment {
         TextView detailView = (TextView)destinationView.findViewById(R.id.destination_detail_description);
         detailView.setText(fromHtml(destination.getDescription()));
         detailView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        ImageView imageView = (ImageView)destinationView.findViewById(R.id.destination_detail_image);
+        Glide.with(this).load(destination.getImage()).into(imageView);
     }
 
     @Override

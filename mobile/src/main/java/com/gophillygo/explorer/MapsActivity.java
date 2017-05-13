@@ -52,7 +52,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onInfoWindowClick(Marker marker) {
         int destinationId = markerIds.get(marker.getId());
-        
+
         // open new view with destination details
         Fragment fr = new DestinationFragment();
         Bundle bundle = new Bundle();

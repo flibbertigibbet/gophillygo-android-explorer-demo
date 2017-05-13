@@ -25,8 +25,8 @@ public class Destination {
     private String state;
     private String zip;
 
-    private URL image;
-    private URL wide_image;
+    private String image;
+    private String wide_image;
 
     private URL website_url;
 
@@ -42,24 +42,6 @@ public class Destination {
 
     // setters
     public void setId(Integer id) { this.id = id; }
-
-    public void setImage(String url) {
-        try {
-            this.image = new URL(url);
-        } catch (MalformedURLException e) {
-            Log.e("Destination", e.toString());
-            // TODO: send to firebase crash logs
-        }
-    }
-
-    public void setWide_image(String url) {
-        try {
-            this.wide_image = new URL(url);
-        } catch (MalformedURLException e) {
-            Log.e("Destination", e.toString());
-            // TODO: send to firebase crash logs
-        }
-    }
 
     public void setWebsite_url(String url) {
         try {
@@ -87,7 +69,7 @@ public class Destination {
         return zip;
     }
 
-    public URL getImage() {
+    public String getImage() {
         return image;
     }
 
@@ -103,7 +85,7 @@ public class Destination {
         return state;
     }
 
-    public URL getWide_image() {
+    public String getWide_image() {
         return wide_image;
     }
 
