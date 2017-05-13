@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,20 +22,31 @@ import com.gophillygo.explorer.models.Destination;
 import java.util.HashMap;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
+    private SparseArray<Destination> destinations;
+    private HashMap<String, Integer> markerIds = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.gophillygo.explorer.R.layout.activity_maps);
+
+        destinations = new SparseArray<>();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.gophillygo.explorer.R.id.map);
         mapFragment.getMapAsync(this);
+    }
 
-        fetchFirebase();
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Integer destinationId = markerIds.get(marker.getId());
+        Destination destination = destinations.get(destinationId);
+        Log.d("onInfoWindowClick", destination.getDescription());
+        // TODO: open new view with destination details
     }
 
     // TODO: move this to a service
@@ -44,23 +56,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ValueEventListener firebaseListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("Firebase", "onDataChange !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Log.d("Firebase", dataSnapshot.toString());
-                Log.d("Firebase", "Child count: " + dataSnapshot.getChildrenCount());
-
-                SparseArray<Destination> destinations = new SparseArray<>((int)dataSnapshot.getChildrenCount());
-
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     Destination destination = snapshot.getValue(Destination.class);
                     int id = Integer.valueOf(snapshot.getKey());
                     destination.setId(id);
                     destinations.append(id, destination);
+
+                    LatLng pos = new LatLng(destination.getLocation().getY(), destination.getLocation().getX());
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(pos)
+                            .title(destination.getName()).snippet(destination.getAddress()));
+                    markerIds.put(marker.getId(), id);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("Firebase", "onCancelled");
+                // TODO: log to firebase crash logs
             }
         };
 
@@ -81,10 +94,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnInfoWindowClickListener(this);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        fetchFirebase();
+
+        LatLng phillyCityHall = new LatLng(39.9527, -75.1636);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(phillyCityHall, 10));
     }
 }
