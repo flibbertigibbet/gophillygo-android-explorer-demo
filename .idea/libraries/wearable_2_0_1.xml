@@ -1,8 +1,7 @@
 <component name="libraryTable">
   <library name="wearable-2.0.1">
     <CLASSES>
-      <root url="file://$USER_HOME$/.android/build-cache/90bc4efd516df3fa04ef5a58d6a90c9bb4d319ce/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/90bc4efd516df3fa04ef5a58d6a90c9bb4d319ce/output/jars/classes.jar!/" />
+      <root url="jar:///opt/android-sdk/extras/google/m2repository/com/google/android/wearable/wearable/2.0.1/wearable-2.0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

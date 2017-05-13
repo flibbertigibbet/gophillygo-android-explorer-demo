@@ -1,4 +1,4 @@
-package explorer.gophillygo.com.gophillygoexplorer;
+package com.gophillygo.explorer;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +13,7 @@ import android.support.wearable.view.DismissOverlayView;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
+
 
 public class MapsActivity extends Activity implements OnMapReadyCallback,
         GoogleMap.OnMapLongClickListener {

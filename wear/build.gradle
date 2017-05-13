@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "explorer.gophillygo.com.gophillygoexplorer"
+        applicationId "com.gophillygo.explorer"
         minSdkVersion 20
         targetSdkVersion 25
         versionCode 1
@@ -20,6 +20,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    provided 'com.google.android.wearable:wearable:2.0.1'
+
     compile 'com.google.android.support:wearable:2.0.1'
     compile 'com.google.android.gms:play-services-wearable:10.2.4'
     compile 'com.google.android.gms:play-services-maps:10.2.4'

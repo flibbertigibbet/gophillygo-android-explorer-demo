@@ -1,4 +1,4 @@
-package explorer.gophillygo.com.gophillygoexplorer.models;
+package com.gophillygo.explorer.models;
 
 import java.net.URL;
 

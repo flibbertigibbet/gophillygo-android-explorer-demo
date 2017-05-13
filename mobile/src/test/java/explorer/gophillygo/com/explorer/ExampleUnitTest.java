@@ -1,4 +1,4 @@
-package explorer.gophillygo.com.gophillygoexplorer;
+package explorer.gophillygo.com.explorer;
 
 import org.junit.Test;
 

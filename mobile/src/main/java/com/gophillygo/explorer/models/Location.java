@@ -1,4 +1,4 @@
-package explorer.gophillygo.com.gophillygoexplorer.models;
+package com.gophillygo.explorer.models;
 
 /**
  * Created by kat on 5/12/17.
