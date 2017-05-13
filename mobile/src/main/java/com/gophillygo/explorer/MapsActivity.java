@@ -1,7 +1,11 @@
 package com.gophillygo.explorer;
 
+import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -17,12 +21,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.gophillygo.explorer.fragments.DestinationFragment;
 import com.gophillygo.explorer.models.Destination;
 
 import java.util.HashMap;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class MapsActivity extends FragmentActivity
+        implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,
+        DestinationFragment.DestinationManager, DestinationFragment.OnFragmentInteractionListener {
 
     private GoogleMap mMap;
     private SparseArray<Destination> destinations;
@@ -37,16 +44,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(com.gophillygo.explorer.R.id.map);
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Integer destinationId = markerIds.get(marker.getId());
-        Destination destination = destinations.get(destinationId);
-        Log.d("onInfoWindowClick", destination.getDescription());
+        int destinationId = markerIds.get(marker.getId());
         // TODO: open new view with destination details
+
+        Fragment fr = new DestinationFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("destinationId", destinationId);
+        fr.setArguments(bundle);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.map, fr);
+        fragmentTransaction.commit();
     }
 
     // TODO: move this to a service
@@ -100,5 +114,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LatLng phillyCityHall = new LatLng(39.9527, -75.1636);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(phillyCityHall, 10));
+    }
+
+    @Override
+    public Destination getDestination(int id) {
+        return destinations.get(id);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        // TODO: something with this, or remove
+        Log.d("MapsActivity", "Got a fragment interaction");
     }
 }
