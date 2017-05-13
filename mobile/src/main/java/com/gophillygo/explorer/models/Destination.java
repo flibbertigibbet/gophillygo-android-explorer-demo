@@ -1,11 +1,18 @@
 package com.gophillygo.explorer.models;
 
+import android.util.Log;
+
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * Created by kat on 5/12/17.
  */
 
+
+@IgnoreExtraProperties
 public class Destination {
 
     private Integer id;
@@ -17,6 +24,37 @@ public class Destination {
     private boolean published;
     private Integer priority;
 
+    // setters
+    public void setId(Integer id) { this.id = id; }
+
+    public void setImage(String url) {
+        try {
+            this.image = new URL(url);
+        } catch (MalformedURLException e) {
+            Log.e("Destination", e.toString());
+            // TODO: send to firebase crash logs
+        }
+    }
+
+    public void setWide_image(String url) {
+        try {
+            this.wide_image = new URL(url);
+        } catch (MalformedURLException e) {
+            Log.e("Destination", e.toString());
+            // TODO: send to firebase crash logs
+        }
+    }
+
+    public void setWebsite_url(String url) {
+        try {
+            this.website_url = new URL(url);
+        } catch (MalformedURLException e) {
+            Log.e("Destination", e.toString());
+            // TODO: send to firebase crash logs
+        }
+    }
+
+    // getters
     public Integer getId() {
         return id;
     }
@@ -75,9 +113,6 @@ public class Destination {
     private URL website_url;
     private String name;
     private Location location;
-
-
-    // TODO: ignoring point and extent
 
 
     public Destination() {

@@ -2,26 +2,83 @@ package com.gophillygo.explorer;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.gophillygo.explorer.models.Destination;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.util.HashMap;
+
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
+    private SparseArray<Destination> destinations;
+    private HashMap<String, Integer> markerIds = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.gophillygo.explorer.R.layout.activity_maps);
+
+        destinations = new SparseArray<>();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.gophillygo.explorer.R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Integer destinationId = markerIds.get(marker.getId());
+        Destination destination = destinations.get(destinationId);
+        Log.d("onInfoWindowClick", destination.getDescription());
+        // TODO: open new view with destination details
+    }
+
+    // TODO: move this to a service
+    private void fetchFirebase() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        ValueEventListener firebaseListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    Destination destination = snapshot.getValue(Destination.class);
+                    int id = Integer.valueOf(snapshot.getKey());
+                    destination.setId(id);
+                    destinations.append(id, destination);
+
+                    LatLng pos = new LatLng(destination.getLocation().getY(), destination.getLocation().getX());
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(pos)
+                            .title(destination.getName()).snippet(destination.getAddress()));
+                    markerIds.put(marker.getId(), id);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Firebase", "onCancelled");
+                // TODO: log to firebase crash logs
+            }
+        };
+
+        database.addListenerForSingleValueEvent(firebaseListener);
+
     }
 
 
@@ -37,10 +94,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnInfoWindowClickListener(this);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        fetchFirebase();
+
+        LatLng phillyCityHall = new LatLng(39.9527, -75.1636);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(phillyCityHall, 10));
     }
 }
