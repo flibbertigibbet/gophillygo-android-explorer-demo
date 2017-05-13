@@ -4,10 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.gophillygo.explorer.R;
 import com.gophillygo.explorer.models.Destination;
@@ -32,6 +36,7 @@ public class DestinationFragment extends Fragment {
     private int destinationId;
     private Destination destination;
     private DestinationManager destinationManager;
+    private View destinationView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,15 +68,29 @@ public class DestinationFragment extends Fragment {
 
         // activity will tell us which destination to present
         destinationManager = (DestinationManager)getActivity();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(LOG_LABEL, "onResume");
         destination = destinationManager.getDestination(destinationId);
         Log.d(LOG_LABEL, "Got destination: " + destination.getName());
+
+        TextView nameView = (TextView)destinationView.findViewById(R.id.destination_detail_name);
+        nameView.setText(destination.getName());
+
+        TextView detailView = (TextView)destinationView.findViewById(R.id.destination_detail_description);
+        detailView.setText(fromHtml(destination.getDescription()));
+        detailView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_destination, container, false);
+        destinationView = inflater.inflate(R.layout.fragment_destination, container, false);
+        return destinationView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -111,5 +130,16 @@ public class DestinationFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html){
+        Spanned result;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            result = Html.fromHtml(html,Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            result = Html.fromHtml(html);
+        }
+        return result;
     }
 }

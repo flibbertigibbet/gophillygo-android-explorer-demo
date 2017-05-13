@@ -52,8 +52,8 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onInfoWindowClick(Marker marker) {
         int destinationId = markerIds.get(marker.getId());
-        // TODO: open new view with destination details
-
+        
+        // open new view with destination details
         Fragment fr = new DestinationFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("destinationId", destinationId);
@@ -61,6 +61,7 @@ public class MapsActivity extends AppCompatActivity
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.map, fr);
+        fragmentTransaction.addToBackStack("destinationDetail");
         fragmentTransaction.commit();
     }
 

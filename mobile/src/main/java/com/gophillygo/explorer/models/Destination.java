@@ -17,12 +17,28 @@ public class Destination {
 
     private Integer id;
 
-    private String city;
+    private String name;
     private String description;
+
+    private String address;
+    private String city;
+    private String state;
     private String zip;
+
     private URL image;
+    private URL wide_image;
+
+    private URL website_url;
+
+    private Location location;
+
     private boolean published;
     private Integer priority;
+
+
+    public Destination() {
+        // default constructor
+    }
 
     // setters
     public void setId(Integer id) { this.id = id; }
@@ -105,18 +121,6 @@ public class Destination {
 
     public Location getLocation() {
         return location;
-    }
-
-    private String state;
-    private URL wide_image;
-    private String address;
-    private URL website_url;
-    private String name;
-    private Location location;
-
-
-    public Destination() {
-        // default constructor
     }
 
 }
