@@ -1,4 +1,4 @@
-package explorer.gophillygo.com.gophillygoexplorer;
+package com.gophillygo.explorer;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -17,10 +17,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(com.gophillygo.explorer.R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(com.gophillygo.explorer.R.id.map);
         mapFragment.getMapAsync(this);
     }
 

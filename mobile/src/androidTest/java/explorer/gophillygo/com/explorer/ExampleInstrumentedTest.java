@@ -1,4 +1,4 @@
-package explorer.gophillygo.com.gophillygoexplorer;
+package explorer.gophillygo.com.explorer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("explorer.gophillygo.com.gophillygoexplorer", appContext.getPackageName());
+        assertEquals("explorer.gophillygo.com.com.gophillygo.explorer", appContext.getPackageName());
     }
 }
