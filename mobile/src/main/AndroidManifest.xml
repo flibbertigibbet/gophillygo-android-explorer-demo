@@ -30,7 +30,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.gophillygo.explorer.MapsActivity"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,6 +38,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".services.GeofenceService"
+            android:exported="false"></service>
+
+        <receiver android:name="com.gophillygo.explorer.services.GeofenceBroadcastReceiver"
+            android:exported="false">
+            <intent-filter >
+                <action android:name="com.gophillygo.explorer.services.ACTION_RECEIVE_GEOFENCE_EVENT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
