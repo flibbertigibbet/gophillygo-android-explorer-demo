@@ -18,14 +18,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
 import com.gophillygo.explorer.fragments.DestinationFragment;
 import com.gophillygo.explorer.models.Destination;
+import com.gophillygo.explorer.services.DestinationService;
 import com.gophillygo.explorer.services.GeofenceManager;
+import com.gophillygo.explorer.services.GoPhillyGoApplication;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,19 +31,21 @@ import java.util.HashMap;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,
-        DestinationFragment.DestinationManager, DestinationFragment.OnFragmentInteractionListener {
+        DestinationFragment.OnFragmentInteractionListener, DestinationService.DestinationsLoadedListener {
 
     private GoogleMap mMap;
-    private SparseArray<Destination> destinations;
     private HashMap<String, Integer> markerIds = new HashMap<>();
     private GeofenceManager geofenceManager;
+    private GoPhillyGoApplication app;
+    private boolean mapIsReady;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.gophillygo.explorer.R.layout.activity_maps);
-
-        destinations = new SparseArray<>();
+        app = (GoPhillyGoApplication)getApplication();
+        mapIsReady = false;
+        app.setDestinationsLoadedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -54,14 +54,14 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public ArrayList<Destination> getGeofencePlaces() {
-        // TODO: implement
+        // TODO: move (application? destination service?)
+        SparseArray<Destination> destinations = app.getDestinations();
         ArrayList<Destination> geofenced = new ArrayList<>(destinations.size());
         for (int i = 0; i < destinations.size(); i++) {
             Destination destination = destinations.get(destinations.keyAt(i));
             geofenced.add(destination);
             Log.d("MapsActivity", destination.getLocation().getY() + ", " + destination.getLocation().getX());
         }
-
         return geofenced;
     }
 
@@ -79,39 +79,6 @@ public class MapsActivity extends AppCompatActivity
         fragmentTransaction.replace(R.id.map, fr);
         fragmentTransaction.addToBackStack("destinationDetail");
         fragmentTransaction.commit();
-    }
-
-    // TODO: move this to a service
-    private void fetchFirebase() {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
-        ValueEventListener firebaseListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Destination destination = snapshot.getValue(Destination.class);
-                    int id = Integer.valueOf(snapshot.getKey());
-                    destination.setId(id);
-                    destinations.append(id, destination);
-
-                    LatLng pos = new LatLng(destination.getLocation().getY(), destination.getLocation().getX());
-                    Marker marker = mMap.addMarker(new MarkerOptions()
-                            .position(pos)
-                            .title(destination.getName()).snippet(destination.getAddress()));
-                    markerIds.put(marker.getId(), id);
-                }
-                startGeofencing();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("Firebase", "onCancelled");
-                // TODO: log to firebase crash logs
-            }
-        };
-
-        database.addListenerForSingleValueEvent(firebaseListener);
-
     }
 
     private void startGeofencing() {
@@ -144,22 +111,42 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mapIsReady = true;
         mMap.setOnInfoWindowClickListener(this);
 
         LatLng phillyCityHall = new LatLng(39.9527, -75.1636);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(phillyCityHall, 10));
 
-        fetchFirebase();
+        if (app.destinationsAreLoaded()) {
+            addDestinationsToMap(app.getDestinations());
+        }
     }
 
-    @Override
-    public Destination getDestination(int id) {
-        return destinations.get(id);
+    private void addDestinationsToMap(SparseArray<Destination> destinations) {
+        for (int i = 0; i < destinations.size(); i++) {
+            Destination destination = destinations.get(destinations.keyAt(i));
+
+            LatLng pos = new LatLng(destination.getLocation().getY(), destination.getLocation().getX());
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                    .position(pos)
+                    .title(destination.getName()).snippet(destination.getAddress()));
+            markerIds.put(marker.getId(), destination.getId());
+        }
+
+        // know that we have places loaded now
+        startGeofencing();
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
         // TODO: something with this, or remove
         Log.d("MapsActivity", "Got a fragment interaction");
+    }
+
+    @Override
+    public void loadedDestinations(SparseArray<Destination> destinations) {
+        if (mapIsReady) {
+            addDestinationsToMap(destinations);
+        }
     }
 }

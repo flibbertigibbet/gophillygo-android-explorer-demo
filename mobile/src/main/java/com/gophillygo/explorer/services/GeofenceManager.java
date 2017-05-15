@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.android.gms.location.LocationServices;
 import com.gophillygo.explorer.MapsActivity;
 
 import java.lang.ref.WeakReference;

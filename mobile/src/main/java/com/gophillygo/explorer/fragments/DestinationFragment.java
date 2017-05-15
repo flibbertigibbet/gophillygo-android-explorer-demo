@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.gophillygo.explorer.R;
 import com.gophillygo.explorer.models.Destination;
+import com.gophillygo.explorer.services.DestinationService;
+import com.gophillygo.explorer.services.GoPhillyGoApplication;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,8 +70,7 @@ public class DestinationFragment extends Fragment {
             destinationId = getArguments().getInt(DESTINATION_ID);
         }
 
-        // activity will tell us which destination to present
-        destinationManager = (DestinationManager)getActivity();
+        destinationManager = DestinationService.getInstance();
     }
 
     @Override
