@@ -4,4 +4,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="location_fine_permission_rationale">Device location permission required to find places nearby.</string>
+    <string name="location_gps_needed_rationale">GPS must be enabled to get an accurate location.</string>
+    <string name="location_requires_gps">Device does not have GPS, which is needed to get location. Please use a different device.</string>
 </resources>
