@@ -83,7 +83,7 @@ public class MapsActivity extends AppCompatActivity
 
     private void startGeofencing() {
         geofenceManager = GeofenceManager.getInstance();
-        if (!geofenceManager.isRunning()) {
+        if (!GeofenceManager.isRunning()) {
             geofenceManager.startService(this);
         } else {
             Log.d("MapActivity", "Geofence manager is already running");

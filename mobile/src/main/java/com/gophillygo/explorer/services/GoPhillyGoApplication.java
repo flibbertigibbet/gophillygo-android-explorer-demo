@@ -1,7 +1,6 @@
 package com.gophillygo.explorer.services;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.SparseArray;
 
 import com.gophillygo.explorer.models.Destination;
